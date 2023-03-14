@@ -10,9 +10,7 @@ use App\Model\varManager;
 
 function homepage() 
 {
-    $Ing1_carrot = ' ..';
-    $varmanager = new varManager;
-    var_dump($varmanager -> IncrementName($Ing1_carrot, 4));
+   
 
     require('templates/homepage.php');
 }
