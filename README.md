@@ -1,5 +1,5 @@
-#website_recipe
-Projet poubelle de débutant 
+
+Projet poubelle de débutant <br>
 
 Website Project : 
 Indexing Menus (by season, price), Recipes (cost, order(desert ...), price,grade), Ingredients(season, price);
