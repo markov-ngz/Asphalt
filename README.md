@@ -1,5 +1,5 @@
 
-Projet poubelle de débutant <br>
+Projet de débutant, d'un code très douteux <br>
 
 Website Project : 
 Indexing Menus (by season, price), Recipes (cost, order(desert ...), price,grade), Ingredients(season, price);
