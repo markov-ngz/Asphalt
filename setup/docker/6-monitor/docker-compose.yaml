@@ -1,0 +1,38 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.5.1
+    container_name: prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      asphalt:
+
+  # Grafana (visualization)
+  grafana:
+    image: grafana/grafana:12.3
+    container_name: grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      asphalt:
+
+networks:
+  asphalt:
+    name: asphalt
+    external: true
+
+volumes:
+  grafana_data:

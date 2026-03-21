@@ -1,0 +1,11 @@
+__pycache__
+.vscode
+target
+*.log
+jarfiles
+*.jar
+*.gz
+site
+*.egg-info
+build
+venv

@@ -1,0 +1,12 @@
+[project]
+name = "gtfs-data-loader"
+version = "0.1.0"
+description = "Load static gtfs data to target database"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pandas>=3.0.1",
+    "psycopg>=3.3.3",
+    "psycopg-binary>=3.3.3",
+    "requests>=2.32.5",
+]

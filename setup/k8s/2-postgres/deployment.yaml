@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: erpcompany-db
+  namespace: asphalt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: erp-db
+  template:
+    metadata:
+      labels:
+        app: erp-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        args: ["postgres", "-c", "wal_level=logical"]
+        envFrom:
+          - configMapRef:
+              name: erp-db-env
+          - secretRef:
+              name: erp-db-secret
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+        - name: init-script
+          mountPath: /docker-entrypoint-initdb.d/init.sql
+          subPath: init.sql
+      resources:
+
+      volumes:
+      - name: db-data
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+      - name: init-script
+        configMap:
+          name: erp-db-init-script

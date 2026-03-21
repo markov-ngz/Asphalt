@@ -1,0 +1,70 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: flink-app
+  namespace: asphalt
+spec:
+  flinkVersion: v2_2
+  serviceAccount: flink
+  flinkConfiguration:
+    
+    taskmanager.numberOfTaskSlots: "1"
+
+    # State configuration 
+    state.backend.type: forst # rocksdb is a better choice there , it was done to check async state implementation ( a bit funnier to do )
+    state.checkpoints.dir: s3://flink/checkpoints
+    execution.checkpointing.interval: 180000 # every 3 minutes 
+    execution.checkpointing.mode: EXACTLY_ONCE
+    execution.checkpointing.incremental: true
+    execution.checkpointing.dir: s3://flink/checkpoints
+    execution.checkpointing.savepoint-dir: s3://flink/savepoints
+    state.backend.forst.sync.enforce-local: false
+    state.backend.forst.cache.dir: /tmp/forst-cache
+
+    # State Access 
+    s3.endpoint: http://rustfs.asphalt.svc.cluster.local:9000
+    s3.path.style.access: true
+    s3.access-key: admin
+    s3.secret-key: adminsecret
+
+    
+    # TaskManager memory 
+    taskmanager.memory.process.size: "624mb"
+    taskmanager.memory.jvm-overhead.min: "64mb"
+    taskmanager.memory.framework.heap.size: "64mb"
+    taskmanager.memory.framework.off-heap.size: "64mb"
+    taskmanager.memory.network.min: "32mb"
+    taskmanager.memory.network.max: "32mb"
+    taskmanager.memory.managed.fraction: "0.2"
+
+    # JobManager memory
+    jobmanager.memory.process.size: "500mb"
+    jobmanager.memory.jvm-metaspace.size: "150mb"
+    jobmanager.memory.jvm-overhead.min: "64mb"
+    jobmanager.memory.jvm-overhead.max: "64mb"
+
+    # Prometheus monitoring 
+    metrics.reporters: prom
+    metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+    metrics.reporter.prom.port: 9250
+
+  jobManager:
+      resource:
+        cpu: 0.2
+        memory: "500mb" 
+  taskManager:
+    resource:
+      cpu: 0.2
+      memory: "624mb"
+
+  podTemplate:
+      spec:
+        containers:
+          - name: flink-main-container
+            ports:
+              - containerPort: 9250
+                name: prom-metrics
+  job:
+    jarURI: local:///opt/flink/usrlib/app.jar
+    parallelism: 1
+    upgradeMode: stateless

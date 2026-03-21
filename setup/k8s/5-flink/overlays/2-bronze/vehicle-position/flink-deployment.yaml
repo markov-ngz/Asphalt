@@ -1,0 +1,18 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: bronze-vehicle-position
+spec:
+  image: asphalt/bronze-vehicle-position:0.1.0
+  job:
+    args:
+      - "--pipeline.name" 
+      - "Bronze - VehiclePosition - Rennes Star"
+      - "--kafka.bootstrap.servers"
+      - "kafka.asphalt.svc.cluster.local:29092"
+      - "--kafka.source.topic"
+      - "dev.raw.gtfsrt-vehicleposition.v1"
+      - "--kafka.source.groupId"
+      - "flink-group"
+      - "--kafka.sink.topic"
+      - "dev.bronze.vehicleposition.v1"

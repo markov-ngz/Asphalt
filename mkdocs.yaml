@@ -1,0 +1,72 @@
+site_name: Asphalt
+
+repo_url: https://github.com/markov-ngz/Asphalt
+
+
+extra_css:
+  - stylesheets/extra.css
+  
+theme:
+  
+  icon:
+    repo: fontawesome/brands/github
+    
+  name: material
+  logo: assets/logo.png
+  favicon: images/favicon.png
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: white
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: black
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs    # Top-level tabs for your 5 sections
+    - navigation.sections
+    - navigation.tabs.sticky
+    - content.code.copy  # Button to copy code snippets
+    - navigation.footer
+    - navigation.instant
+    - navigation.instant.progress
+
+plugins:
+  - search
+
+extra:
+  generator: false
+
+markdown_extensions:
+  # HTML markdown for images
+  - attr_list
+  - md_in_html
+  - pymdownx.blocks.caption
+  # Code blocks
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+nav:
+  - Home: index.md
+  - Architecture:
+      - Architecture: architecture/index.md
+      - Business: architecture/domain.md
+      - Data: architecture/data.md
+      - Applicative: architecture/applicative.md
+      - Technical: architecture/technical.md
+  - Setup: 
+      - setup/index.md
+      - Kubernetes: setup/kubernetes.md
+      - Docker: setup/docker.md
+  - Repository structure: repository_structure.md

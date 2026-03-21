@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: erpcompany-setup-route-table-rennes
+  namespace: asphalt
+spec:
+  ttlSecondsAfterFinished: 100 # auto pod deletion after 100s
+  template:
+    spec:
+      containers:
+      - name: setup-route-table-rennes
+        image: docker.io/library/gtfs_data_loader:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: erp-db-setup-routes-config          
+          - configMapRef:
+              name: gtfs-rennes-star
+      restartPolicy: Never
+      
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: erpcompany-setup-route-table-bordeaux
+  namespace: asphalt
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      containers:
+      - name: setup-route-table-bordeaux
+        image: docker.io/library/gtfs_data_loader:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: erp-db-setup-routes-config          
+          - configMapRef:
+              name: gtfs-bordeaux-tbm
+      restartPolicy: Never

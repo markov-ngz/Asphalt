@@ -1,0 +1,28 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: silver-active-vehicle-position
+spec:
+  image: asphalt/silver-active-enriched-vehicle:0.1.0
+  job:
+    args:
+      - "--pipeline.name" 
+      - "Silver - Active Vehicles"
+
+      - "--kafka.bootstrap.servers"
+      - "kafka.asphalt.svc.cluster.local:29092"
+      
+      - "--kafka.source.topic"
+      - "dev.silver.enriched-vehicleposition.v1"
+      
+      - "--kafka.source.groupId"
+      - "flink-group"
+      
+      - "--kafka.sink.topic.activevehicle"
+      - "dev.silver.active-vehicleposition.v1"
+      
+      - "--kafka.sink.topic.inactivevehicle"
+      - "dev.silver.inactive-vehicleposition.v1"
+      
+      - "--rules.vehicle.idletime" 
+      - "10000"

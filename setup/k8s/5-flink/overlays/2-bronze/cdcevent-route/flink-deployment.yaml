@@ -1,0 +1,16 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: bronze-cdcevent-route
+spec:
+  image: asphalt/bronze-cdcevent-route:0.1.0
+  job:
+    args:
+      - "--kafka.bootstrap.servers"
+      - "kafka.asphalt.svc.cluster.local:29092"
+      - "--kafka.source.topic"
+      - "dev.raw.cdcevent.route.v1"
+      - "--kafka.source.groupId"
+      - "flink-group"
+      - "--kafka.sink.topic"
+      - "dev.bronze.cdcevent.route.v1"

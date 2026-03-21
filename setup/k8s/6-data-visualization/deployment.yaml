@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traffic-metrics-dataviz
+  namespace: asphalt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traffic-metrics-dataviz
+  template:
+    metadata:
+      labels:
+        app: traffic-metrics-dataviz
+    spec:
+      containers:
+        - name: traffic-metrics-dataviz
+          image: asphalt/traffic-metrics-dataviz:0.1.0
+          securityContext:
+            allowPrivilegeEscalation: false # no-new-privileges equivalent
+          ports:
+            - containerPort: 8000
+              name: client
+          envFrom:
+            - secretRef:
+                name: traffic-metrics-dataviz-secrets
+          resources:

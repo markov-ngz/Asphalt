@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  namespace: asphalt
+spec:
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: kafka
+          image: apache/kafka:4.1.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9092
+              name: client
+            - containerPort: 29093
+              name: controller
+            - containerPort: 29092
+              name: broker
+          envFrom:
+            - configMapRef:
+                name: kafka-config
+          # volumeMounts:
+          #   - name: data
+          #     mountPath: /var/lib/kafka/data
+          resources:
+
+      # volumes:
+      #   - name: kafka-data
+      #     persistentVolumeClaim:
+      #       claimName: kafka-data

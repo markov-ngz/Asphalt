@@ -1,0 +1,28 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: silver-enriched-vehicle-position
+spec:
+  image: asphalt/silver-enriched-vehicle-position:0.1.0
+  job:
+    args:
+      - "--pipeline.name" 
+      - "Silver - Enriched Vehicle Position"
+
+      - "--kafka.bootstrap.servers"
+      - "kafka.asphalt.svc.cluster.local:29092"
+      
+      - "--kafka.source.topic"
+      - "dev.bronze.vehicleposition.v1"
+      
+      - "--kafka.enrichment.topic"
+      - "dev.bronze.cdcevent.route.v1"
+      
+      - "--kafka.source.groupId"
+      - "flink-group"
+      
+      - "--kafka.sink.topic"
+      - "dev.silver.enriched-vehicleposition.v1"
+      
+      - "--kafka.sink.topic.validationerrors"
+      - "dev.silver.invalid-vehicleposition.v1"

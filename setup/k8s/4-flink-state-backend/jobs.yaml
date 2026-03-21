@@ -1,0 +1,54 @@
+# bucket-setup-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bucket-setup
+  namespace: asphalt
+spec:
+  ttlSecondsAfterFinished: 300 # auto-cleanup after 5 min
+  template:
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+        # Waits for rustfs to be healthy before running (replaces depends_on condition)
+        - name: wait-for-rustfs
+          image: alpine/curl:8.17.0
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for RustFS to be ready..."
+              until curl -sf http://rustfs:9000/health && curl -sf http://rustfs:9001/rustfs/console/health; do
+                echo "RustFS not ready yet, retrying in 5s..."
+                sleep 5
+              done
+              echo "RustFS is ready!"
+      containers:
+        - name: bucket-setup
+          image: amazon/aws-cli:2.33.17
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+            - name: AWS_ENDPOINT_URL
+              value: http://rustfs:9000
+          command:
+            - /bin/sh
+            - -c
+            - |
+              echo Checking if RustFS bucket exists...
+              if aws s3 ls "s3://flink" 2>&1 | grep -q 'NoSuchBucket'; then
+                echo Bucket does not exist. Creating RustFS bucket...
+                aws s3 mb s3://flink
+              else
+                echo Bucket already exists. Skipping creation.
+              fi
+              aws s3 ls
+              echo Bucket setup complete.

@@ -1,0 +1,49 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: flink-app
+  namespace: asphalt
+spec:
+  flinkVersion: v1_20
+  serviceAccount: flink
+
+      # volumes:
+      #   - name: flink-logs
+      #     persistentVolumeClaim:
+      #       claimName: raw-cdcevent-route-pvc
+
+      # containers:
+      #   - name: flink-main-container
+      #     volumeMounts:
+      #       # Logs 
+      #       - name: flink-logs
+      #         mountPath: /opt/flink/log
+  flinkConfiguration:
+    taskmanager.numberOfTaskSlots: "1"
+    # TaskManager internal cuts (Total: 624mb)
+    taskmanager.memory.process.size: "624mb"
+    taskmanager.memory.jvm-overhead.min: "64mb"
+    taskmanager.memory.framework.heap.size: "64mb"
+    taskmanager.memory.framework.off-heap.size: "64mb"
+    taskmanager.memory.network.min: "32mb"
+    taskmanager.memory.network.max: "32mb"
+    taskmanager.memory.managed.fraction: "0.2"
+
+    # JobManager internal cuts (Total: 400mb)
+    jobmanager.memory.process.size: "500mb"
+    jobmanager.memory.jvm-metaspace.size: "128mb"
+    jobmanager.memory.jvm-overhead.min: "64mb"
+    jobmanager.memory.jvm-overhead.max: "64mb"
+  jobManager:
+      resource:
+        cpu: 0.2
+        memory: "400mb" 
+  taskManager:
+    resource:
+      cpu: 0.2
+      memory: "624mb"
+  job:
+    jarURI: local:///opt/flink/usrlib/app.jar
+    parallelism: 1
+    upgradeMode: stateless
+    state: running

@@ -1,0 +1,1 @@
+docker build -t asphalt/traffic-metrics-dataviz:0.1.0 .

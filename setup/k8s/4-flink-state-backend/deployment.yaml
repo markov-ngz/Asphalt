@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rustfs
+  namespace: asphalt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rustfs
+  template:
+    metadata:
+      labels:
+        app: rustfs
+    spec:
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+
+      # Replaces the volume-permission-helper service
+      initContainers:
+        - name: volume-permission-helper
+          image: alpine
+          command:
+            - sh
+            - -c
+            - |
+              chown -R 10001:10001 /data0 /logs &&
+              echo 'Volume permissions fixed'
+          securityContext:
+            runAsUser: 0 # needs root to chown
+          volumeMounts:
+            - name: rustfs-data-0
+              mountPath: /data0
+            - name: rustfs-logs
+              mountPath: /logs
+
+      containers:
+        - name: rustfs
+          image: rustfs/rustfs:1.0.0-alpha.82
+          securityContext:
+            allowPrivilegeEscalation: false # no-new-privileges equivalent
+          ports:
+            - containerPort: 9000
+              name: s3-api
+            - containerPort: 9001
+              name: console
+          resources:
+          envFrom:
+            - configMapRef:
+                name: rustfs-settings
+          env:
+            - name: RUSTFS_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: access-key
+            - name: RUSTFS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials
+                  key: secret-key
+          volumeMounts:
+            - name: rustfs-data-0
+              mountPath: /data/rustfs0
+            - name: rustfs-logs
+              mountPath: /app/logs
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "curl -f http://127.0.0.1:9000/health && curl -f http://127.0.0.1:9001/rustfs/console/health"
+            initialDelaySeconds: 40
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "curl -f http://127.0.0.1:9000/health && curl -f http://127.0.0.1:9001/rustfs/console/health"
+            initialDelaySeconds: 40
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+
+      volumes:
+        - name: rustfs-data-0
+          persistentVolumeClaim:
+            claimName: rustfs-data-0
+        - name: rustfs-logs
+          persistentVolumeClaim:
+            claimName: rustfs-logs

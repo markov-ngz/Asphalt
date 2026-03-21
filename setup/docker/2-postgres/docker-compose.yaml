@@ -1,0 +1,67 @@
+services:
+  erpcompany_db:
+    container_name: erpcompany_db
+    image: postgres:16-alpine
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 127.0.0.1:7432:5432
+    environment:
+      - POSTGRES_USER=kakarott
+      - POSTGRES_PASSWORD=raditz
+      - POSTGRES_DB=GTFS
+      - POSTGRES_INITDB_ARGS="--encoding=UTF8"
+    command: [ "postgres", "-c", "wal_level=logical" ]
+    networks:
+      asphalt:
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kakarott -d GTFS"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  init_rennes_routes_data:
+    container_name: setup_route_rennes
+    build: ../../../tools/gtfs-data-loader
+    depends_on:
+      erpcompany_db:
+        condition: service_healthy
+    environment:
+      - PG_HOST=erpcompany_db
+      - PG_PORT=5432
+      - PG_DB=GTFS
+      - PG_USER=kakarott
+      - PG_PASSWORD=raditz
+      - GTFS_URL=https://eu.ftp.opendatasoft.com/star/gtfs/GTFS_STAR_BUS_METRO_EN_COURS.zip
+      - GTFS_TRANSPORT=star
+      - GTFS_CITY=rennes
+    networks:
+      asphalt:
+  init_bordeaux_routes_data:
+    container_name: setup_route_bordeaux
+    build: ../../../tools/gtfs-data-loader
+    depends_on:
+      erpcompany_db:
+        condition: service_healthy
+    environment:
+      - PG_HOST=erpcompany_db
+      - PG_PORT=5432
+      - PG_DB=GTFS
+      - PG_USER=kakarott
+      - PG_PASSWORD=raditz
+      - GTFS_URL=https://bdx.mecatran.com/utw/ws/gtfsfeed/static/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt
+      - GTFS_TRANSPORT=tbm
+      - GTFS_CITY=bordeaux
+
+    networks:
+      asphalt:
+networks:
+  asphalt:
+    name: asphalt
+    external: true
+
+volumes:
+  postgres-data:
+    name: "gtfs_data"

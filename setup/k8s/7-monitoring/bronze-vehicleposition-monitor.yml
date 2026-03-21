@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: bronze-vehicleposition-monitor
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  namespaceSelector:
+    matchNames:
+      - asphalt
+  selector:
+    matchLabels:
+      app: bronze-vehicle-position
+  podMetricsEndpoints:
+    - port: prom-metrics
+      path: /
+      interval: 30s
+
+# To troubleshoot ..
+# check named port from app with "kubectl get pod <pod_name>  -n <ns> -o jsonpath='{.spec.containers[0].ports}'"
+# Get app selectors :  kubectl get pods -n asphalt --show-labels
+# kubectl --namespace monitoring port-forward $POD_NAME 3000
+# kubectl port-forward svc/prometheus-kube-prometheus-prometheus 9090:9090 -n monitoring

@@ -1,0 +1,28 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: gold-traffic-metrics
+spec:
+  image: asphalt/gold-traffic-metrics:0.1.0
+  job:
+    args:
+      - "--pipeline.name" 
+      - "Gold - Traffic Metrics"
+
+      - "--kafka.bootstrap.servers"
+      - "kafka.asphalt.svc.cluster.local:29092"
+      
+      - "--kafka.source.topic"
+      - "dev.silver.active-vehicleposition.v1"
+      
+      - "--kafka.source.groupId"
+      - "flink-group"
+      
+      - "--kafka.sink.topic.avgspeed"
+      - "dev.gold.avg-speedresult.v1"
+      
+      - "--kafka.sink.topic.countvehicle"
+      - "dev.gold.count-activevehicle.v1"
+
+      - "--kafka.sink.topic.maxvehiclespeed"
+      - "dev.gold.max-vehiclespeed.v1"

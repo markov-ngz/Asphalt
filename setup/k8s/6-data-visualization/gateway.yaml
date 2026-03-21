@@ -1,0 +1,14 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: traffic-metrics-dataviz-gateway
+  namespace: asphalt
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: web          # ← matches Traefik entrypoint name
+      protocol: HTTP
+      port: 8000         # ← matches --entryPoints.web.address=:8000/tcp ( see : kubectl describe deploy traefik -n traefik | grep -A 50 "Args:")
+      allowedRoutes:
+        namespaces:
+          from: Same

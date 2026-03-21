@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: erp-db-setup-routes-config
+  namespace: asphalt
+data:
+  PG_HOST: erpcompany-db.asphalt.svc.cluster.local
+  PG_PORT: "5432"
+  PG_DB: GTFS
+  PG_USER: kakarott
+  PG_PASSWORD: raditz
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gtfs-rennes-star
+  namespace: asphalt
+data:
+  GTFS_URL: https://eu.ftp.opendatasoft.com/star/gtfs/GTFS_STAR_BUS_METRO_EN_COURS.zip
+  GTFS_CITY: rennes
+  GTFS_TRANSPORT: star
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gtfs-bordeaux-tbm
+  namespace: asphalt
+data:
+  GTFS_URL: https://bdx.mecatran.com/utw/ws/gtfsfeed/static/bordeaux?apiKey=opendata-bordeaux-metropole-flux-gtfs-rt
+  GTFS_CITY: bordeaux
+  GTFS_TRANSPORT: tbm

@@ -1,0 +1,26 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: export-traffic-metrics
+  namespace: asphalt
+spec:
+  image: asphalt/export-traffic-metrics:0.1.0
+  flinkConfiguration:
+    kubernetes.env.secretKeyRef: env:JINJA_USERNAME,secret:erp-db-secret,key:POSTGRES_USER;env:JINJA_PASSWORD,secret:erp-db-secret,key:POSTGRES_PASSWORD
+  job:
+    args:
+      - "--kubernetes.env.secretKeyRef"
+      - "env:JINJA_USERNAME,secret:erp-db-secret,key:POSTGRES_USER;env:JINJA_PASSWORD,secret:erp-db-secret,key:POSTGRES_PASSWORD"
+      
+      - "--jinja.args.hostname" 
+      - "erpcompany-db.asphalt.svc.cluster.local"
+      - "--jinja.args.port"
+      - "5432"
+      
+      - "--jinja.args.bootstrapServers"
+      - "kafka.asphalt.svc.cluster.local:29092"
+      - "--jinja.args.sourceTopicPattern"
+      - "dev.gold.*"
+      
+      - "--sql.filepath"
+      - "/opt/flink/usrlib/sql/statement.sql"

@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package ngz.markov.gtfs.rt.proto;
+
+option java_package = "ngz.markov.gtfs.rt.proto";
+
+message EnrichedVehiclePosition {
+  VehiclePosition vehiclePosition = 1;
+
+  // Enrichment Fields
+  string routeShortName = 2;
+  string routeLongName = 3;
+  string routeDesc = 4;
+  int32 routeType = 5;
+}
+
+message VehiclePosition {
+  Trip trip = 1;
+  Position position = 2;
+  string currentStatus = 3;
+  int64 timestamp = 4;
+  string stopId = 5;
+  Vehicle vehicle = 6;
+
+  // Additional fields
+  string transport = 7;
+  string city = 8;
+
+  message Trip {
+    string tripId = 1;
+    string scheduleRelationship = 2;
+    string routeId = 3;
+    int32 directionId = 4;
+  }
+
+  message Position {
+    double latitude = 1;
+    double longitude = 2;
+    double bearing = 3;
+    double speed = 4;
+  }
+
+  message Vehicle {
+    string id = 1;
+    string label = 2;
+  }
+}

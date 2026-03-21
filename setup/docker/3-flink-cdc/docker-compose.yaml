@@ -1,0 +1,35 @@
+services:
+
+  cdc-postgres-jobmanager:
+    build: .
+    container_name: flink-cdc-postgres-jobmanager
+    ports:
+      - "127.0.0.1:8082:8081"  # Flink Web UI
+    command: jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: cdc-postgres-jobmanager
+        taskmanager.numberOfTaskSlots: 2
+    networks:
+      - asphalt
+
+  cdc-postgres-taskmanager:
+    build: .
+    container_name: flink-cdc-postgres-taskmanager
+    depends_on:
+      - cdc-postgres-jobmanager
+    command: taskmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: cdc-postgres-jobmanager
+        taskmanager.numberOfTaskSlots: 2
+    networks:
+      - asphalt
+
+networks:
+  # External network for Producer/Consumer Applications
+  asphalt:
+    name: asphalt
+    external: true

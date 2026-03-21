@@ -1,0 +1,18 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: traffic-metrics-dataviz-route
+  namespace: asphalt
+
+spec:
+  parentRefs:
+  - name: traffic-metrics-dataviz-gateway
+    sectionName: web   # ← updated to match new listener name
+    kind: Gateway
+  hostnames:
+  - "example.local"
+  rules:
+  - backendRefs:
+    - name: traffic-metrics-dataviz-service
+      port: 80
+      weight: 1

@@ -1,0 +1,43 @@
+services:
+  kafka:
+    image: apache/kafka:4.1.1
+    container_name: kafka     
+    ports:
+      - 127.0.0.1:9092:9092
+    networks:
+      asphalt:
+    environment:
+      # --- Identifiers ---
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk # Identifier for the Kafka cluster
+      KAFKA_NODE_ID: 1 # Identifier for the node within the cluster
+      KAFKA_BROKER_ID: 1 # Identifier for the broker within the cluster
+
+      KAFKA_PROCESS_ROLES: broker,controller # Roles this node will perform
+
+      # --- Listener Parameters ---
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL # listener used for communication between brokers in the cluster ( common to all brokers )
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER # listener used for communication between the broker and the controller ( common to all controllers )
+
+      # Internal communication between brokers, Communication with the controller,  External client connections
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:29093
+      # Maps listener names to security protocols. PLAINTEXT means no encryption.
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+
+      # Addresses and ports the broker advertises to clients for connection.
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+
+      # --- Replication and Rebalance Parameters ---
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0 # Delay before the first rebalance of a consumer group
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 # Number of replicas for the __consumer_offsets topic
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1 # Minimum number of in-sync replicas (ISR) for the transaction state log
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1 #  Number of replicas for the transaction state log
+
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093 # nodes eligible to vote in controller elections, formatted as id@host:port
+
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs # path to log dir 
+
+networks:
+  # External network for Producer/Consumer Applications
+  asphalt:
+    name: asphalt
+    external: true

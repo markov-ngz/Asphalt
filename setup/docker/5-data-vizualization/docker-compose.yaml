@@ -1,0 +1,18 @@
+services:
+  dataviz:
+    image: asphalt/traffic-metrics-dataviz:0.1.0
+    container_name: traffic-metrics-dataviz     
+    ports:
+      - 127.0.0.1:8000:8000
+    environment:
+      - DB_HOST=erpcompany_db
+      - DB_PORT=5432
+      - DB_NAME=GTFS
+      - DB_USERNAME=kakarott
+      - DB_PASSWORD=raditz
+    networks:
+      asphalt:
+networks:
+  asphalt:
+    name: asphalt
+    external: true

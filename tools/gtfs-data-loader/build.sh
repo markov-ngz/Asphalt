@@ -1,0 +1,1 @@
+docker build -t asphalt/gtfs-data-loader:0.1.0 .

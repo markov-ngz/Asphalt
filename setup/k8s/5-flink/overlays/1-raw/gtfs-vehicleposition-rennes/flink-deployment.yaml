@@ -1,0 +1,22 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: raw-gtfs-vehicleposition-rennes
+spec:
+  image: asphalt/raw-gtfsrt-vehicleposition:0.1.0
+  job:
+    args:
+      - "--pipeline.name" 
+      - "Raw - GtfsRt VehiclePosition- Rennes Star"
+      - "--gtfs.source.url" 
+      - "https://proxy.transport.data.gouv.fr/resource/star-rennes-integration-gtfs-rt-vehicle-position"
+      - "--gtfs.source.transport" 
+      - "star"
+      - "--gtfs.source.city" 
+      - "rennes"
+      - "--poll.interval.ms" 
+      - "30000"
+      - "--kafka.bootstrap.servers"
+      - "kafka.asphalt.svc.cluster.local:29092"
+      - "--kafka.topic"
+      - "dev.raw.gtfsrt-vehicleposition.v1"

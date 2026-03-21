@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package ngz.markov.cdc.proto;
+
+option java_outer_classname = "CDCEventRouteProtoOuterClass";
+option java_package = "ngz.markov.cdc.proto";
+
+enum RowKind {
+  ROW_KIND_UNSPECIFIED = 0;
+  INSERT = 1;
+  UPDATE_BEFORE = 2;
+  UPDATE_AFTER = 3;
+  DELETE = 4;
+}
+
+message Route {
+  int32 id = 1;
+  string route_id = 2;
+  string agency_id = 3;
+  string route_short_name = 4;
+  string route_long_name = 5;
+  string route_desc = 6;
+  int32 route_type = 7;
+  string route_url = 8;
+  string route_color = 9;
+  string route_text_color = 10;
+  int32 route_sort_order = 11;
+  string updated_at = 12;
+  string source_city = 13;
+  string source_transport = 14;
+  string operation = 15; // c, u, d
+  string operation_timestamp = 16;
+}
+
+message CDCEvent {
+  string database_name = 1;
+  string schema = 2;
+  string table = 3;
+  int64 record_timestamp = 4;
+  RowKind row_kind = 5;
+  string json_object = 6;
+  Route object = 7;
+}
